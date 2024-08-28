@@ -16,7 +16,7 @@ import conf
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
 
-LOGS_LEVEL = 'DEBUG'
+LOGS_LEVEL = 'INFO'
 LOGS_DIR = os.getenv('LOGS_PATH')
 JOB_ID = 'S10555924020004671'
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
@@ -161,7 +161,7 @@ for liste_ppn in liste_de_listes_ppn :
     # mes_logs.debug(infos_loc_sudoc.get_liste_notice())
     liste_infos_loc_sudoc.extend(infos_loc_sudoc.get_liste_notice())    
 
-mes_logs.debug(liste_infos_loc_sudoc)
+# mes_logs.debug(liste_infos_loc_sudoc)
 
 ###########################################################################
 #  Rattachement des notices à une bibliothèque responsable de sa descente #
@@ -175,13 +175,20 @@ liste_rcr = conf.liste_bib()
 
 for doc in liste_infos_loc_sudoc :
     ppn = doc['ppn']
+    mes_logs.debug(json.dumps(doc,indent=4))
     date_modif_notice = datetime.strptime(doc['bib0touched'], '%Y-%m-%dT%H:%M:%S.%f000')
+
 
     # un de nos rcr a-t-il modifié la notice et que la date de modification correspond à la date de la veille ?
     # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
     if doc['byrcr'] in liste_rcr and date_modif_notice >= date_modif_notice_sudoc:
         mes_logs.debug("{} -- {} -- {}".format(ppn,liste_rcr[doc['byrcr']]['nom'],date_modif_notice))
         liste_rcr[doc['byrcr']]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_notice.strftime('%d/%m/%Y'),'type_modif' : 'modif_notice'})
+
+    # cas ou la bibliothèque s'est délocalisée dans le SUDOC avant le passage de l'analyse
+    if "library" not in doc :
+        mes_logs.error("Plus de localisations dans le SUDOC sous la notice {}".format(ppn))
+        continue
 
     # Un de nos rcr a-t-il créé ou modifié un exemplaire la veille ?
     # Si qu'une seule loc la loc est présenée sous forme d'un dictionnaire
