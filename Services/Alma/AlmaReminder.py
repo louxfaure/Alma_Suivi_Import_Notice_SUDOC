@@ -48,7 +48,7 @@ class Reminder(object):
 
 
     def check_reminder(self):
-        """Retourne True si un reminder du même type existe déjà sur la notice
+        """Retourne True si un reminder du même type existe déjà sur la notice met à jour la date du reminder existant
 
         Args:
             mms_id ([type]): [description]
@@ -70,9 +70,30 @@ class Reminder(object):
             reminders_list = self.appel_api.extract_content(response)
             if reminders_list['total_record_count'] > 0 :
                 self.mes_logs.info("une alerte du même type existe déjà pour la notice {}, le type {} et le rcr {}".format(self.mms_id,self.type,self.status))
+                reminder = reminders_list['reminder'][0]
+                reminder['text'] = self.msg
+                today = date.today()
+                reminder['reminder_date'] = today.strftime("%Y-%m-%d")
+                self.update_reminder(id_du_reminder = reminder['id'],reminder=reminder)
                 return True
+            
             else :
-                return False     
+                return False
+    
+    def update_reminder(self, id_du_reminder,reminder):
+        data = json.dumps(reminder)
+        status, response = self.appel_api.request(
+                "PUT",
+                "https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/{}/reminders/{}".format(self.mms_id,id_du_reminder),
+                data=data, content_type=self.accept, accept=self.accept
+                )
+        if status == 'Error':
+            self.est_erreur = True
+            self.message_erreur = response
+        
+
+
+
 
     def create_reminder(self):
             """Attache une alerte à une notice bibliographique

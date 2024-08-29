@@ -57,7 +57,7 @@ mes_bibs = {
     },
     "335222103": {
         "id_alma": "3300800000",
-        "nom": "Bib. Temporaire (UBM)",
+        "nom": "BU Lettres et Sciences Humaines",
         "institution": "UBM",
         "notices_a_controler": []
     },
@@ -77,7 +77,7 @@ mes_bibs = {
     },
     "330632101": {
         "id_alma": "1302100000",
-        "nom": "BU Santé",
+        "nom": "BU Sc. du vivant et de la santé",
         "institution": "UB",
         "périmètre": "Périmètre SVS",
         "notices_a_controler": []
@@ -133,15 +133,9 @@ mes_bibs = {
     },
     "470012101": {
         "id_alma": "1103000000",
-        "nom": "Droit-langues Agen",
+        "nom": "Bib Droit-langues Agen",
         "institution": "UB",
         "périmètre": "Périmètres multiples",
-        "notices_a_controler": []
-    },
-    "333182103": {
-        "id_alma": "2000400000",
-        "nom": "ENSCBP",
-        "institution": "INP",
         "notices_a_controler": []
     },
     "335222221": {
@@ -165,35 +159,35 @@ mes_bibs = {
     },
     "330632212": {
         "id_alma": "1500300000",
-        "nom": "ESPE Bordeaux",
+        "nom": "INSPE Bordeaux Caudéran",
         "institution": "UB",
         "périmètre": "Périmètre SH",
         "notices_a_controler": []
     },
     "332812201": {
         "id_alma": "1500400000",
-        "nom": "ESPE Mérignac",
+        "nom": "INSPE Mérignac",
         "institution": "UB",
         "périmètre": "Périmètre SH",
         "notices_a_controler": []
     },
     "401922201": {
         "id_alma": "1500600000",
-        "nom": "ESPE Mont-de-Marsan",
+        "nom": "INSPE Mont-de-Marsan",
         "institution": "UB",
         "périmètre": "Périmètre SH",
         "notices_a_controler": []
     },
     "644452201": {
         "id_alma": "1500500000",
-        "nom": "ESPE Pau",
+        "nom": "INSPE Pau",
         "institution": "UB",
         "périmètre": "Périmètre SH",
         "notices_a_controler": []
     },
     "243222203": {
         "id_alma": "1500700000",
-        "nom": "ESPE Périgueux",
+        "nom": "Campus Périgord",
         "institution": "UB",
         "périmètre": "Périmètres multiples",
         "notices_a_controler": []
@@ -258,12 +252,6 @@ mes_bibs = {
         "nom": "LAB",
         "institution": "UB",
         "périmètre": "Périmètre ST",
-        "notices_a_controler": []
-    },
-    "335222103": {
-        "id_alma": "3100400000",
-        "nom": "Lettres et Sciences humaines",
-        "institution": "UBM",
         "notices_a_controler": []
     },
     "331922302": {

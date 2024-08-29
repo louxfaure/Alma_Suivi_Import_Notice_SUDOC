@@ -16,7 +16,7 @@ import conf
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
 
-LOGS_LEVEL = 'INFO'
+LOGS_LEVEL = 'DEBUG'
 LOGS_DIR = os.getenv('LOGS_PATH')
 JOB_ID = 'S10555924020004671'
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
@@ -24,7 +24,7 @@ PREFIXE_SETS_ZONE_RESEAU = "[Ensemble depuis Import]"
 PREFIXE_SETS_INSTITUTION = "[Chargements SUDOC]"  
 DELAI_CONSERVATION_SETS_INSTITUTION = 0
 MAIL_ADMINISTRATEUR = 'alexandre.faure@u-bordeaux.fr'
-MAIL_DESTINATAIRES = ['alexandre.faure@u-bordeaux.fr,aurelie.baque@u-bordeaux.fr']
+MAIL_DESTINATAIRES = ['alexandre.faure@u-bordeaux.fr','aurelie.baque@u-bordeaux.fr']
 MAIL_FROM = 'alexandre.faure@u-bordeaux.fr'
 
 # Calcul des dates
@@ -58,7 +58,7 @@ mes_logs.info("DEBUT TRAITEMENT IMPORT DU {}".format(date_du_jour_formatee))
 # 2. Dans les institutions (PREFIXE_SETS_INSTITUTION) pour partager aux bibliothèques la liste des notices chargées pour lesquelles la bibliothèque est responsable de la descente
 
 mes_logs.info("Nettoyage des jeux de résultats Zone Réseau")
-set_a_supprimer = AlmaNettoieSets.AlmaNettoieSet(prefixe=PREFIXE_SETS_ZONE_RESEAU,delais_conservation=1,apikey=API_KEY,service=SERVICE)
+set_a_supprimer = AlmaNettoieSets.AlmaNettoieSet(prefixe=PREFIXE_SETS_ZONE_RESEAU,delais_conservation=15,apikey=API_KEY,service=SERVICE)
 if set_a_supprimer.est_erreur :
     mes_logs.warnings("Impossible de récupérer la liste des sets pour la zone réseau. Voici le message d'erreur : {}".format(set_a_supprimer.message_erreur))
 else :

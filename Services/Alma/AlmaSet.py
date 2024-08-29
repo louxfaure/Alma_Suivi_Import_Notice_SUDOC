@@ -63,17 +63,20 @@ class AlmaSet(object):
             # self.logger.debug(self.set_data)
 
     def add_members(self,mms_ids_list,accept='json'):
-        members = [{'id': element} for element in mms_ids_list]
-        
-        self.set_data["members"] = {
-            "member" : members
-        }
-        self.logger.debug(self.set_data)
-        status,response = self.appel_api.request('POST', 
-                                'https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/sets/{}?op=add_members&fail_on_invalid_id=false'.format(self.set_id),
-                                accept=accept, content_type=accept, data=json.dumps(self.set_data))
-        if status == 'Error':
-            self.est_erreur = True
-            self.message_erreur = response
-        else:
-            self.logger.debug(self.appel_api.extract_content(response))
+        # On splite la liste des mmsid en liste de 1000 identifiants
+        n = 1000
+        list_of_mms_ids_list = [mms_ids_list[i * n:(i + 1) * n] for i in range((len(mms_ids_list) + n - 1) // n )]
+        for liste_menbres_jeu in list_of_mms_ids_list:
+            members = [{'id': element} for element in liste_menbres_jeu]
+            self.set_data["members"] = {
+                "member" : members
+            }
+            self.logger.debug(self.set_data)
+            status,response = self.appel_api.request('POST', 
+                                    'https://api-eu.hosted.exlibrisgroup.com/almaws/v1/conf/sets/{}?op=add_members&fail_on_invalid_id=false'.format(self.set_id),
+                                    accept=accept, content_type=accept, data=json.dumps(self.set_data))
+            if status == 'Error':
+                self.est_erreur = True
+                self.message_erreur = response
+            else:
+                self.logger.debug(self.appel_api.extract_content(response))
