@@ -113,7 +113,7 @@ for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH',
         mes_logs.info("Pas de cas pour {}".format(population))
         continue 
     mes_logs.info("Récupération de la liste notices chargées pour {}".format(population))   
-    # Pour les recouvrement simplet et les multimatches on utilise un webservice dédié
+    # Pour les recouvrement simple et les multimatches on utilise un webservice dédié
     if population == 'SINGLE_MATCHES' :
         # Via le webservice Match
         mon_set = AlmaMatchFromImport.AlmaMatchFromImport(job_id=JOB_ID,instance=job_instance_id,population=population,apikey=API_KEY,service=SERVICE,nombre_de_membres=job_infos[population])

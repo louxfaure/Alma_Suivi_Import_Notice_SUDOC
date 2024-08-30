@@ -56,7 +56,7 @@ mes_bibs = {
         "notices_a_controler": []
     },
     "335222103": {
-        "id_alma": "3300800000",
+        "id_alma": "3100400000",
         "nom": "BU Lettres et Sciences Humaines",
         "institution": "UBM",
         "notices_a_controler": []
