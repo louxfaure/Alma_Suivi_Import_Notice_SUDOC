@@ -22,9 +22,9 @@ JOB_ID = 'S10555924020004671'
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
 PREFIXE_SETS_ZONE_RESEAU = "[Ensemble depuis Import]"
 PREFIXE_SETS_INSTITUTION = "[Chargements SUDOC]"  
-DELAI_CONSERVATION_SETS_INSTITUTION = 0
+DELAI_CONSERVATION_SETS_INSTITUTION = 15
 MAIL_ADMINISTRATEUR = 'alexandre.faure@u-bordeaux.fr'
-MAIL_DESTINATAIRES = ['alexandre.faure@u-bordeaux.fr','aurelie.baque@u-bordeaux.fr']
+MAIL_DESTINATAIRES = ['rebub-suivi-chargements-sudoc@diff.u-bordeaux.fr']
 MAIL_FROM = 'alexandre.faure@u-bordeaux.fr'
 
 # Calcul des dates
