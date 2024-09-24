@@ -132,6 +132,11 @@ class Sudoc_Qui_Est_Loc(object):
         return list_bib
     
     def get_liste_notice(self):
+        """Met en forme le résultat. Le web service de l'ABES n'est aps cohérent. Si il n'y a qu'un seul résultat il retourne un dictionnaire. S'il y a plusieurs résultats il retourne une liste. Si la réponse est un dictionnaire on ajoute l'objet à une liste pour homgénéiser les traitements ultérieurs
+
+        Returns:
+            dict: _description_
+        """
         if isinstance(self.result['sudoc']['result'],dict):
            return [self.result['sudoc']['result']]
         else :

@@ -29,7 +29,7 @@ def exemplaire_sudoc_modifie_par_membre_reseau(loc_sudoc, date_modif_notice_sudo
         date_modif_notice_sudoc (date): date de la veille du chargement analysé
 
     Returns:
-        type modification (string) : modif_exemplaire ou 'toute mise à jour' détermine si la modification de l'exemplaire a déclenché l'envoie de la notice
+        type modification (string) : modif_exemplaire ou toute_mise_a_jour détermine si la modification de l'exemplaire a déclenché l'envoie de la notice
         rcr (string) : rcr de la bibliothèque sous laquellle sont rattachés les exemplaires
         date de modification de l'exemplaire (date) :
     """

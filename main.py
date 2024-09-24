@@ -11,21 +11,22 @@ from datetime import datetime
 from Services import logs,mail,fonctions
 from Services.Alma import AlmaSetFromImport, AlmaMatchFromImport, AlmaMultimatchFromImport, Alma_api_imports, AlmaReminder, AlmaSet,AlmaNettoieSets
 from Services.SUDOC import Sudoc_test_localisation
-import conf
+import bib, conf
 
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
 
 LOGS_LEVEL = 'INFO'
 LOGS_DIR = os.getenv('LOGS_PATH')
-JOB_ID = 'S10555924020004671'
+JOB_ID = 'S10555924020004671' #Identifiant du profil d'import
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
 PREFIXE_SETS_ZONE_RESEAU = "[Ensemble depuis Import]"
 PREFIXE_SETS_INSTITUTION = "[Chargements SUDOC]"  
 DELAI_CONSERVATION_SETS_INSTITUTION = 15
-MAIL_ADMINISTRATEUR = 'alexandre.faure@u-bordeaux.fr'
-MAIL_DESTINATAIRES = ['rebub-suivi-chargements-sudoc@diff.u-bordeaux.fr']
-MAIL_FROM = 'alexandre.faure@u-bordeaux.fr'
+autres_parametres = conf.recupere_parametres()
+MAIL_ADMINISTRATEUR = autres_parametres['mail_admin']
+MAIL_DESTINATAIRES = autres_parametres['mails_destinataires']
+MAIL_FROM = autres_parametres['mail_from']
 
 # Calcul des dates
 # Pour débogage
@@ -58,7 +59,7 @@ mes_logs.info("DEBUT TRAITEMENT IMPORT DU {}".format(date_du_jour_formatee))
 # 2. Dans les institutions (PREFIXE_SETS_INSTITUTION) pour partager aux bibliothèques la liste des notices chargées pour lesquelles la bibliothèque est responsable de la descente
 
 mes_logs.info("Nettoyage des jeux de résultats Zone Réseau")
-set_a_supprimer = AlmaNettoieSets.AlmaNettoieSet(prefixe=PREFIXE_SETS_ZONE_RESEAU,delais_conservation=15,apikey=API_KEY,service=SERVICE)
+set_a_supprimer = AlmaNettoieSets.AlmaNettoieSet(prefixe=PREFIXE_SETS_ZONE_RESEAU,delais_conservation=DELAI_CONSERVATION_SETS_INSTITUTION,apikey=API_KEY,service=SERVICE)
 if set_a_supprimer.est_erreur :
     mes_logs.warnings("Impossible de récupérer la liste des sets pour la zone réseau. Voici le message d'erreur : {}".format(set_a_supprimer.message_erreur))
 else :
@@ -129,6 +130,7 @@ for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH',
         exit()
     liste_notices_chargees.update(mon_set.liste_membres_set)
 mes_logs.debug(json.dumps(liste_notices_chargees,indent=4))
+
 mes_logs.info("Il y a {} notices chargées".format(len(liste_notices_chargees)))
 
 
@@ -170,7 +172,7 @@ for liste_ppn in liste_de_listes_ppn :
 mes_logs.info("Rattachement des notices à une bibliothèque responsable de sa descente")
 
 # Récupération de la liste des RCR
-liste_rcr = conf.liste_bib()
+liste_rcr = bib.liste_bib()
 # mes_logs.debug(liste_rcr)
 
 for doc in liste_infos_loc_sudoc :
@@ -179,7 +181,7 @@ for doc in liste_infos_loc_sudoc :
     date_modif_notice = datetime.strptime(doc['bib0touched'], '%Y-%m-%dT%H:%M:%S.%f000')
 
 
-    # un de nos rcr a-t-il modifié la notice et que la date de modification correspond à la date de la veille ?
+    # un de nos rcr a-t-il modifié la notice ? La date de modification correspond-t-elle à la date de la veille ?
     # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
     if doc['byrcr'] in liste_rcr and date_modif_notice >= date_modif_notice_sudoc:
         mes_logs.debug("{} -- {} -- {}".format(ppn,liste_rcr[doc['byrcr']]['nom'],date_modif_notice))
@@ -195,7 +197,7 @@ for doc in liste_infos_loc_sudoc :
     if isinstance(doc['library'],dict) :
         type_modif, rcr, date_modif_ex = fonctions.exemplaire_sudoc_modifie_par_membre_reseau(doc['library'],date_modif_notice_sudoc)
         # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
-        if not any(d['ppn'] == ppn for d in liste_rcr[rcr]['notices_a_controler']) :
+        if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_exemplaire' for d in liste_rcr[rcr]['notices_a_controler']) :
             liste_rcr[rcr]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_ex.strftime('%d/%m/%Y'),'type_modif' : type_modif})
             mes_logs.debug("{} -- {} -- {}".format(ppn,rcr,date_modif_ex.strftime('%d/%m/%Y')))
     else :
@@ -203,7 +205,7 @@ for doc in liste_infos_loc_sudoc :
         for loc_sudoc in doc['library'] :
             type_modif, rcr, date_modif_ex = fonctions.exemplaire_sudoc_modifie_par_membre_reseau(loc_sudoc,date_modif_notice_sudoc)
             # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
-            if not any(d['ppn'] == ppn for d in liste_rcr[rcr]['notices_a_controler']) :
+            if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_exemplaire' for d in liste_rcr[rcr]['notices_a_controler']) :
                 liste_rcr[rcr]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_ex.strftime('%d/%m/%Y'),'type_modif' : type_modif})
                 mes_logs.debug("{} -- {} -- {}".format(ppn,rcr,date_modif_ex.strftime('%d/%m/%Y')))
 mes_logs.debug(json.dumps(liste_rcr,indent=4))
@@ -256,21 +258,24 @@ for rcr, rcr_infos in liste_rcr.items() :
            
                 
         # Est ce qu'une localisation existe dans Alma ? (Analyse de synchronisation)
-        if len(loc_alma) == 0 :
-            rappel = AlmaReminder.Reminder(mmsid,'LOC_ABSENTE',rcr,ppn,apikey=API_KEY,service=SERVICE)
-            message['compteurs']['nb_erreurs_synchro']['valeur'] += 1
-            if rappel.est_erreur :
-                message['est_erreur'] = True
-                message['message_erreur'].append("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
-                mes_logs.error("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
-        else : 
-            if fonctions.localisation_absente(id_bib_alma,loc_alma) :
+        
+        # On ne fait pas d'analyse de synchronisation pour les notices redescendus car modifiées par l'établissement car ce dernier n'est pas nécessairement localisé sous la notice  
+        if notice['type_modif'] != 'modif_notice':
+            if len(loc_alma) == 0 :
                 rappel = AlmaReminder.Reminder(mmsid,'LOC_ABSENTE',rcr,ppn,apikey=API_KEY,service=SERVICE)
                 message['compteurs']['nb_erreurs_synchro']['valeur'] += 1
                 if rappel.est_erreur :
                     message['est_erreur'] = True
                     message['message_erreur'].append("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
                     mes_logs.error("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
+            else : 
+                if fonctions.localisation_absente(id_bib_alma,loc_alma) :
+                    rappel = AlmaReminder.Reminder(mmsid,'LOC_ABSENTE',rcr,ppn,apikey=API_KEY,service=SERVICE)
+                    message['compteurs']['nb_erreurs_synchro']['valeur'] += 1
+                    if rappel.est_erreur :
+                        message['est_erreur'] = True
+                        message['message_erreur'].append("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
+                        mes_logs.error("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
         
 
  
