@@ -11,7 +11,7 @@ from datetime import datetime
 from Services import logs,mail,fonctions
 from Services.Alma import AlmaSetFromImport, AlmaMatchFromImport, AlmaMultimatchFromImport, Alma_api_imports, AlmaReminder, AlmaSet,AlmaNettoieSets
 from Services.SUDOC import Sudoc_test_localisation
-import bib, conf
+import bib, autres_parametres
 
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
@@ -23,10 +23,10 @@ API_KEY = os.getenv('PROD_NETWORK_BIB_API')
 PREFIXE_SETS_ZONE_RESEAU = "[Ensemble depuis Import]"
 PREFIXE_SETS_INSTITUTION = "[Chargements SUDOC]"  
 DELAI_CONSERVATION_SETS_INSTITUTION = 15
-autres_parametres = conf.recupere_parametres()
-MAIL_ADMINISTRATEUR = autres_parametres['mail_admin']
-MAIL_DESTINATAIRES = autres_parametres['mails_destinataires']
-MAIL_FROM = autres_parametres['mail_from']
+info_mails = autres_parametres.recupere_parametres()
+MAIL_ADMINISTRATEUR = info_mails['mail_admin']
+MAIL_DESTINATAIRES = info_mails['mails_destinataires']
+MAIL_FROM = info_mails['mail_from']
 
 # Calcul des dates
 # Pour débogage
