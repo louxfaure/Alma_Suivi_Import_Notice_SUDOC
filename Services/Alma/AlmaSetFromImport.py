@@ -198,7 +198,7 @@ class AlmaSetFromImport(object):
                         "editeur": Notice_Alma.editeur(),
                         "date_pub": Notice_Alma.date_pub(),
                         "localisations": Notice_Alma.localisations(),
-                        "population": self.population,
+                        "population": "ELECTRONIQUE" if Notice_Alma.est_elec() else self.population,
                         "mmsid_institutions" : Notice_Alma.mmsid_institutions()
                     }
                 }

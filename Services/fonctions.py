@@ -119,6 +119,11 @@ def retourne_objet_message(nom_bib):
                 "descr": "Notices non chargées car dupliquées dans les TR",
                 "anomalie" : True
             },
+            "ELECTRONIQUE": {
+                "valeur": 0,
+                "descr": "RCR physique utilisé pour une localisation sous une notice de document électronique",
+                "anomalie" : True
+            },
         },
     }
 
@@ -171,6 +176,7 @@ def construire_en_tete_tableau():
         "Notices non import\u00e9es car verouill\u00e9es dans Alma",
         "Nombre de notices non charg\u00e9es",
         "Notices non charg\u00e9es car dupliqu\u00e9es dans les TR",
+        "RCR physique utilis\u00e9 pour une localisation sous une notice de document \u00e9lectronique"
     ]:
         debut_tableau = debut_tableau + tab(6) + th_col(titre_col)
     debut_tableau = debut_tableau + tab(6) + th_col("Erreurs")

@@ -102,7 +102,8 @@ class AlmaMultimatchFromImport(object):
                     "date_pub": Notice_Alma.date_pub(),
                     "localisations": Notice_Alma.localisations(),
                     "population": self.population,
-                    "mmsid_institutions" : Notice_Alma.mmsid_institutions()
+                    "mmsid_institutions" : Notice_Alma.mmsid_institutions(),
+                    "est_elec" : Notice_Alma.est_elec()
                 }
                 infos_groupe[ppn]["doc"].append(infos_titres)
             self.liste_membres_set.update(infos_groupe)

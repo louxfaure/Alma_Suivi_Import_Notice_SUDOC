@@ -239,7 +239,7 @@ for rcr, rcr_infos in liste_rcr.items() :
 
 
         # Repérage des anomales (Multimatchs, notices verouillées et notices dupliquées) 
-        if population in ['MULTI_MATCHES','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED'] :
+        if population in ['MULTI_MATCHES','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED','ELECTRONIQUE'] :
             if population == 'MULTI_MATCHES' :
                 msg = "Doublon sur PPN {} pour les notices {}".format(ppn," et ".join(mmsid))
                 for mms_id in mmsid :

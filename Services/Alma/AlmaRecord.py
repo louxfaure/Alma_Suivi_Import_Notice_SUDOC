@@ -115,3 +115,11 @@ class AlmaRecord(object):
         ):
             if network_numbers.text.startswith("(PPN)"):
                 return network_numbers.text[5:]
+            
+    def est_elec(self):
+        """Analyse la position 6 du Leader si électronique retourne true"""
+        leader = self.record.find('.//leader').text
+        if leader[6:7] == "l" :
+            return True
+        else :
+            return False
