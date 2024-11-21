@@ -309,4 +309,4 @@ mes_bibs_debug = {
     }
 }
 def liste_bib():
-    return mes_bibs_debug
+    return mes_bibs
