@@ -16,7 +16,7 @@ import bib, autres_parametres
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
 
-LOGS_LEVEL = 'INFO'
+LOGS_LEVEL = 'DEBUG'
 LOGS_DIR = os.getenv('LOGS_PATH')
 JOB_ID = 'S10555924020004671' #Identifiant du profil d'import
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
@@ -37,7 +37,8 @@ MAIL_FROM = info_mails['mail_from']
 # ## Ajout des heurs minutes secondes
 # date_du_jour = date_fixe.replace(hour=now.hour, minute=now.minute,second=now.second)
 # En production
-date_du_jour = datetime.now()
+date_heure_du_jour = datetime.now()
+date_du_jour = date_heure_du_jour.replace(hour=0, minute=0, second=1)
 date_du_jour_formatee = date_du_jour.strftime('%Y-%m-%d')
 date_du_jour_formatee_fr = date_du_jour.strftime('%d/%m/%Y')
 # Calcule la date de modification des notices dans le SUDOC par rapport à la date de leur chargement
@@ -49,7 +50,6 @@ mon_message = mail.Mail()
 logs.setup_logging(name=SERVICE, level=LOGS_LEVEL,log_dir=LOGS_DIR)
 mes_logs = logging.getLogger(SERVICE)
 mes_logs.info("DEBUT TRAITEMENT IMPORT DU {}".format(date_du_jour_formatee))
-
 
 ##################################
 # Nettoyage des jeux de résulats #
@@ -163,7 +163,7 @@ for liste_ppn in liste_de_listes_ppn :
     # mes_logs.debug(infos_loc_sudoc.get_liste_notice())
     liste_infos_loc_sudoc.extend(infos_loc_sudoc.get_liste_notice())    
 
-# mes_logs.debug(liste_infos_loc_sudoc)
+mes_logs.debug(liste_infos_loc_sudoc)
 
 ###########################################################################
 #  Rattachement des notices à une bibliothèque responsable de sa descente #
@@ -182,7 +182,6 @@ for doc in liste_infos_loc_sudoc :
 
 
     # un de nos rcr a-t-il modifié la notice ? La date de modification correspond-t-elle à la date de la veille ?
-    # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
     if doc['byrcr'] in liste_rcr and date_modif_notice >= date_modif_notice_sudoc:
         mes_logs.debug("{} -- {} -- {}".format(ppn,liste_rcr[doc['byrcr']]['nom'],date_modif_notice))
         liste_rcr[doc['byrcr']]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_notice.strftime('%d/%m/%Y'),'type_modif' : 'modif_notice'})
@@ -193,11 +192,11 @@ for doc in liste_infos_loc_sudoc :
         continue
 
     # Un de nos rcr a-t-il créé ou modifié un exemplaire la veille ?
-    # Si qu'une seule loc la loc est présenée sous forme d'un dictionnaire
+    # Si qu'une seule loc la loc est présentée sous forme d'un dictionnaire
     if isinstance(doc['library'],dict) :
         type_modif, rcr, date_modif_ex = fonctions.exemplaire_sudoc_modifie_par_membre_reseau(doc['library'],date_modif_notice_sudoc)
         # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
-        if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_exemplaire' for d in liste_rcr[rcr]['notices_a_controler']) :
+        if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_notice' for d in liste_rcr[rcr]['notices_a_controler']) :
             liste_rcr[rcr]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_ex.strftime('%d/%m/%Y'),'type_modif' : type_modif})
             mes_logs.debug("{} -- {} -- {}".format(ppn,rcr,date_modif_ex.strftime('%d/%m/%Y')))
     else :
@@ -205,7 +204,7 @@ for doc in liste_infos_loc_sudoc :
         for loc_sudoc in doc['library'] :
             type_modif, rcr, date_modif_ex = fonctions.exemplaire_sudoc_modifie_par_membre_reseau(loc_sudoc,date_modif_notice_sudoc)
             # On s'assure que la notice n'a pas été déjà signalée pour la modification de la notice
-            if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_exemplaire' for d in liste_rcr[rcr]['notices_a_controler']) :
+            if not any(d['ppn'] == ppn and d['type_modif'] == 'modif_notice' for d in liste_rcr[rcr]['notices_a_controler']) :
                 liste_rcr[rcr]['notices_a_controler'].append({ 'ppn' : ppn, 'date_modif' : date_modif_ex.strftime('%d/%m/%Y'),'type_modif' : type_modif})
                 mes_logs.debug("{} -- {} -- {}".format(ppn,rcr,date_modif_ex.strftime('%d/%m/%Y')))
 mes_logs.debug(json.dumps(liste_rcr,indent=4))
@@ -230,7 +229,6 @@ for rcr, rcr_infos in liste_rcr.items() :
         message['compteurs']['nb_notices_chargees']['valeur'] += 1
         ppn = notice['ppn']
         population,mmsid,loc_alma,liste_mmsid_institutions = fonctions.retourne_variable_notices_dans_Alma(liste_notices_chargees[ppn])
-
         # On ne conserve que les notices Modifiées la veille par l'établissement pour ajout dans un jeu de résultat on exclu les multi match
         if notice['type_modif'] in ['modif_exemplaire','modif_notice'] and population != "MULTI_MATCHES":
             message['compteurs'][notice['type_modif']]['valeur'] += 1
@@ -243,6 +241,7 @@ for rcr, rcr_infos in liste_rcr.items() :
             if population == 'MULTI_MATCHES' :
                 msg = "Doublon sur PPN {} pour les notices {}".format(ppn," et ".join(mmsid))
                 for mms_id in mmsid :
+
                     rappel = AlmaReminder.Reminder(mms_id,population,rcr,msg,apikey=API_KEY,service=SERVICE)
                     if rappel.est_erreur :
                         message['est_erreur'] = True

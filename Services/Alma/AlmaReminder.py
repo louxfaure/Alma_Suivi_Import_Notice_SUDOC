@@ -49,6 +49,7 @@ class Reminder(object):
 
     def check_reminder(self):
         """Retourne True si un reminder du même type existe déjà sur la notice met à jour la date du reminder existant
+        maj 21112024 Le filtre par statut etr type ne fonctionne pas
 
         Args:
             mms_id ([type]): [description]
@@ -59,7 +60,7 @@ class Reminder(object):
         """
         status, response = self.appel_api.request(
             "GET",
-            "https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/{}/reminders?type={}&satus={}".format(self.mms_id,self.type,self.status),
+            "https://api-eu.hosted.exlibrisgroup.com/almaws/v1/bibs/{}/reminders?type={}&status={}".format(self.mms_id,self.type,self.status),
             accept=self.accept,
         )
         # self.response = self.appel_api.extract_content(response)
@@ -69,7 +70,7 @@ class Reminder(object):
         else:
             reminders_list = self.appel_api.extract_content(response)
             if reminders_list['total_record_count'] > 0 :
-                self.mes_logs.info("une alerte du même type existe déjà pour la notice {}, le type {} et le rcr {}".format(self.mms_id,self.type,self.status))
+                self.mes_logs.debug("une alerte du même type existe déjà pour la notice {}, le type {} et le rcr {}".format(self.mms_id,self.type,self.status))
                 reminder = reminders_list['reminder'][0]
                 reminder['text'] = self.msg
                 today = date.today()

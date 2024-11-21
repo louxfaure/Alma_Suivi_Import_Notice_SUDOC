@@ -293,5 +293,20 @@ mes_bibs = {
         "notices_a_controler": []
     }
 }
+mes_bibs_debug = {
+    "335222102": {
+        "id_alma": "1103300000",
+        "nom": "BU Droit sc. politique économie",
+        "institution": "UB",
+        "périmètre": "Périmètre DSPEG",
+        "notices_a_controler": []
+    },
+    "335222205": {
+        "id_alma": "3101000000",
+        "nom": "Robert Etienne",
+        "institution": "UBM",
+        "notices_a_controler": []
+    }
+}
 def liste_bib():
-    return mes_bibs
+    return mes_bibs_debug
