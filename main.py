@@ -16,7 +16,7 @@ import bib, autres_parametres
 
 SERVICE = "Alma_Suivi_Import_Notice_SUDOC"
 
-LOGS_LEVEL = 'DEBUG'
+LOGS_LEVEL = 'INFO'
 LOGS_DIR = os.getenv('LOGS_PATH')
 JOB_ID = 'S10555924020004671' #Identifiant du profil d'import
 API_KEY = os.getenv('PROD_NETWORK_BIB_API') 
