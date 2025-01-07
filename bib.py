@@ -291,6 +291,12 @@ mes_bibs = {
         "nom": "IEP",
         "institution": "IEP",
         "notices_a_controler": []
+    },
+    "335222104": {
+        "id_alma": "1103300000",
+        "nom": "Réserve Patrimoniale",
+        "institution": "UB",
+        "notices_a_controler": []
     }
 }
 mes_bibs_debug = {

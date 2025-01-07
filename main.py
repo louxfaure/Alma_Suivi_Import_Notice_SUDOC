@@ -30,11 +30,11 @@ MAIL_FROM = info_mails['mail_from']
 
 # Calcul des dates
 # Pour débogage
-# today = '2024-07-09'
+# today = '2024-12-18'
 # now = datetime.now()
-# ## Conversion en objet datetime
+# # ## Conversion en objet datetime
 # date_fixe = datetime.strptime(today, '%Y-%m-%d')
-# ## Ajout des heurs minutes secondes
+# # ## Ajout des heurs minutes secondes
 # date_du_jour = date_fixe.replace(hour=now.hour, minute=now.minute,second=now.second)
 # En production
 date_heure_du_jour = datetime.now()
@@ -109,7 +109,8 @@ mes_logs.debug(json.dumps(job_infos,indent=4))
 ##############################################
 mes_logs.info("Récupération de la liste notices chargées")
 liste_notices_chargees = {}
-for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED']:
+for population in ['MULTI_MATCHES']:
+# for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED']:
     if job_infos[population] == 0 :
         mes_logs.info("Pas de cas pour {}".format(population))
         continue 
@@ -132,7 +133,7 @@ for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH',
 mes_logs.debug(json.dumps(liste_notices_chargees,indent=4))
 
 mes_logs.info("Il y a {} notices chargées".format(len(liste_notices_chargees)))
-
+exit(1)
 
 ################################################################
 #  Récupération des informations de localisation dans le SUDOC #
@@ -237,9 +238,11 @@ for rcr, rcr_infos in liste_rcr.items() :
 
 
         # Repérage des anomales (Multimatchs, notices verouillées et notices dupliquées) 
-        if population in ['MULTI_MATCHES','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED','ELECTRONIQUE'] :
+        if population in ['MULTI_MATCHES'] :
+        # if population in ['MULTI_MATCHES','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED','ELECTRONIQUE'] :
             if population == 'MULTI_MATCHES' :
                 msg = "Doublon sur PPN {} pour les notices {}".format(ppn," et ".join(mmsid))
+                mes_logs.debug(msg)
                 for mms_id in mmsid :
 
                     rappel = AlmaReminder.Reminder(mms_id,population,rcr,msg,apikey=API_KEY,service=SERVICE)
@@ -276,7 +279,6 @@ for rcr, rcr_infos in liste_rcr.items() :
                         message['message_erreur'].append("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
                         mes_logs.error("Impossible de créer de rappel pour la notice {} et le blocage erreur_synchro".format(mmsid))
         
-
  
     # Si la liste des notices à controler est pleine on va créer le jeux de résultat pour signalement dans Alma
     if len(liste_pour_creation_set) > 0 :
