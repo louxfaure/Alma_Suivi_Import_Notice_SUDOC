@@ -239,6 +239,7 @@ def liste_pour_redaction_rapport():
                 "Périmètre ST": [],
                 "Périmètre SVS": [],
                 "Périmètres multiples": [],
+                "SCOOP" : [],
             },
         },
         "UBM": {"descr": "Université Bordeaux Montaigne", "liste": []},
