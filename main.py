@@ -109,8 +109,7 @@ mes_logs.debug(json.dumps(job_infos,indent=4))
 ##############################################
 mes_logs.info("Récupération de la liste notices chargées")
 liste_notices_chargees = {}
-for population in ['MULTI_MATCHES']:
-# for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED']:
+for population in ['SINGLE_MATCHES','MULTI_MATCHES','IMPORTED_RECORDS_NO_MATCH','NOT_ADDED_LOCKED','NOT_ADDED_DUPLICATED']:
     if job_infos[population] == 0 :
         mes_logs.info("Pas de cas pour {}".format(population))
         continue 
@@ -133,7 +132,6 @@ for population in ['MULTI_MATCHES']:
 mes_logs.debug(json.dumps(liste_notices_chargees,indent=4))
 
 mes_logs.info("Il y a {} notices chargées".format(len(liste_notices_chargees)))
-exit(1)
 
 ################################################################
 #  Récupération des informations de localisation dans le SUDOC #
