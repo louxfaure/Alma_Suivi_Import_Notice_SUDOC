@@ -294,6 +294,7 @@ mes_bibs = {
     },
     "335222104": {
         "id_alma": "1103300000",
+        "périmètre": "SCOOP",
         "nom": "Réserve Patrimoniale",
         "institution": "UB",
         "notices_a_controler": []
