@@ -298,6 +298,13 @@ mes_bibs = {
         "nom": "Réserve Patrimoniale",
         "institution": "UB",
         "notices_a_controler": []
+    },
+    "330639901 ": {
+        "id_alma": "1103300000",
+        "périmètre": "SCOOP",
+        "nom": "Babordnum",
+        "institution": "UB",
+        "notices_a_controler": []
     }
 }
 mes_bibs_debug = {
